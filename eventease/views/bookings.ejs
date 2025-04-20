@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 py-8">
+  <h2 class="text-3xl font-futuristic text-white mb-8 text-center">Upcoming Events</h2>
+  
+  <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <% events.forEach(event => { %>
+      <li class="flex justify-center">
+        <a href="/event/<%= event.id %>" class="block bg-cardBg p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">
+          <div class="relative">
+            <div class="mb-4">
+              <!-- Event Name -->
+              <h3 class="text-xl font-semibold text-white mb-2"><%= event.name %></h3>
+            </div>
+
+            <div class="flex justify-between text-gray-300">
+              <p class="text-sm">Seats Available:</p>
+              <p class="text-primary font-medium text-lg"><%= event.seats %></p>
+            </div>
+          </div>
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+</div>
+
+

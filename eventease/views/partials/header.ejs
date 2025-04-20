@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventEase</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3b82f6', // Blue accent from the image
+            darkBg: '#1f2937',  // Dark background
+            cardBg: '#374151',  // Card background
+            accentYellow: '#fef08a', // Yellow for featured events
+          },
+          fontFamily: {
+            futuristic: ['Orbitron', 'sans-serif'], // Futuristic font (you can include via Google Fonts if needed)
+          },
+        },
+      },
+    };
+  </script>
+  <!-- Optional: Google Fonts for futuristic font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-darkBg text-white min-h-screen">
+  <header class="bg-darkBg border-b border-gray-700 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-3xl font-futuristic text-white">EventEase</h1>
+      <nav class="space-x-6">
+        <a href="/" class="text-white hover:text-primary transition">Home</a>
+        <a href="/events/create" class="text-white hover:text-primary transition">Create Event</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container mx-auto py-8">
