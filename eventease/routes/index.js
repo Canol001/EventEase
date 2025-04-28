@@ -1,80 +1,91 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../models/db');
+const db = require('../models/db'); // Ensure this path is correct
 const multer = require('multer');
 const upload = multer({ dest: 'public/images' });
 
 // Homepage - List Events
-router.get('/', (req, res) => {
-  db.all('SELECT * FROM events ORDER BY date ASC', (err, events) => {
-    if (err) {
-      return res.status(500).send('Database error.');
-    }
+router.get('/', async (req, res) => {
+  try {
+    // Fetch events ordered by date
+    const events = db.prepare('SELECT * FROM events ORDER BY date ASC').all();
     res.render('index', { events });
-  });
+  } catch (err) {
+    console.error("Error fetching events:", err);
+    return res.status(500).send('Database error.');
+  }
 });
 
 // Event Detail + Booking Form
-router.get('/event/:id', (req, res) => {
+router.get('/event/:id', async (req, res) => {
   const id = req.params.id;
-  db.get("SELECT * FROM events WHERE id = ?", [id], (err, event) => {
-    if (err || !event) return res.send("Event not found.");
+  try {
+    // Fetch the specific event by ID
+    const event = db.prepare("SELECT * FROM events WHERE id = ?").get(id);
+    if (!event) return res.send("Event not found.");
 
-    db.all("SELECT seat_number FROM bookings WHERE event_id = ?", [id], (err, bookedSeats) => {
-      const takenSeats = bookedSeats.map(row => row.seat_number);
-      res.render('event', { event, takenSeats });
-    });
-  });
+    // Fetch booked seats for the event
+    const bookedSeats = db.prepare("SELECT seat_number FROM bookings WHERE event_id = ?").all(id);
+    const takenSeats = bookedSeats.map(row => row.seat_number);
+    
+    res.render('event', { event, takenSeats });
+  } catch (err) {
+    console.error("Error fetching event details:", err);
+    return res.status(500).send("Error fetching event.");
+  }
 });
 
 // Event creation form (GET route)
-router.get('/events/create', (req, res) => {
-  // Use db.all() to fetch all categories since we expect multiple rows
-  db.all('SELECT * FROM category', (err, categories) => {
-    if (err) {
-      console.error('Error fetching categories:', err);
-      return res.status(500).send('Server Error');
-    }
-    // Render the create-event page with the categories data
+router.get('/events/create', async (req, res) => {
+  try {
+    // Fetch all categories (if needed)
+    const categories = db.prepare('SELECT * FROM category').all();
     res.render('create-event', { categories });
-  });
+  } catch (err) {
+    console.error("Error fetching categories:", err);
+    return res.status(500).send('Server Error');
+  }
 });
 
-// Handle Booking
-router.post('/book', (req, res) => {
+// Handle Booking (POST route)
+router.post('/book', async (req, res) => {
   const { eventId, name, seat } = req.body;
-
-  // Check if seat is already booked
-  db.get("SELECT * FROM bookings WHERE event_id = ? AND seat_number = ?", [eventId, seat], (err, existing) => {
+  
+  try {
+    // Check if the seat is already booked
+    const existing = db.prepare("SELECT * FROM bookings WHERE event_id = ? AND seat_number = ?").get(eventId, seat);
     if (existing) {
       return res.send("Sorry, that seat is already booked.");
     }
 
-    db.run("INSERT INTO bookings (name, seat_number, event_id) VALUES (?, ?, ?)",
-      [name, seat, eventId], (err) => {
-        if (err) throw err;
-        res.render('bookings', { name, seat, eventId });
-      });
-  });
+    // Insert the booking into the database
+    db.prepare("INSERT INTO bookings (name, seat_number, event_id) VALUES (?, ?, ?)").run(name, seat, eventId);
+    
+    // Render the booking confirmation page
+    res.render('bookings', { name, seat, eventId });
+  } catch (err) {
+    console.error("Error processing booking:", err);
+    return res.status(500).send('Error processing booking.');
+  }
 });
 
 // Handle Event Creation (POST route)
-router.post('/events/create', upload.single('image'), (req, res) => {
+router.post('/events/create', upload.single('image'), async (req, res) => {
   const { name, date, price, location, category_id, description } = req.body;
   const image = req.file ? req.file.filename : null;
 
-  db.run(
-    `INSERT INTO events (name, date, price, location, category_id, image, description) 
-     VALUES (?, ?, ?, ?, ?, ?, ?)`, 
-    [name, date, price, location, category_id, image, description],
-    (err) => {
-      if (err) {
-        console.error('Error creating event:', err);
-        return res.status(500).send('Error creating event.');
-      }
-      res.redirect('/events');
-    }
-  );
+  try {
+    // Insert the event into the database
+    db.prepare(
+      `INSERT INTO events (name, date, price, location, category_id, image, description) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    ).run(name, date, price, location, category_id, image, description);
+
+    res.redirect('/events');
+  } catch (err) {
+    console.error("Error creating event:", err);
+    return res.status(500).send('Error creating event.');
+  }
 });
 
 module.exports = router;
