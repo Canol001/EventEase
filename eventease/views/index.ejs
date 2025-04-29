@@ -29,7 +29,7 @@
         <% events.slice(0, 2).forEach(event => { %>
           <div 
             class="relative bg-cover bg-center p-8 rounded-lg shadow-lg h-96 flex flex-col justify-end transform transition-transform duration-300 hover:scale-105" 
-            style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.9)), url('/images/<%= event.image %>')"
+            style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.9)), url('/uploads/<%= event.image %>')"
           >
             <!-- Category Tag -->
             <span class="absolute top-4 right-4 bg-accentYellow text-black text-xs font-semibold px-3 py-1 rounded-full shadow-lg">
@@ -97,7 +97,7 @@
       <% events.forEach(event => { %>
         <div 
           class="relative bg-cover bg-center p-6 rounded-lg shadow-lg h-72 flex flex-col justify-end transform transition-transform duration-300 hover:scale-105" 
-          style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.9)), url('/images/<%= event.image %>')"
+          style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.9)), url('/uploads/<%= event.image %>')"
         >
           <!-- Category Tag -->
           <span class="absolute top-4 right-4 bg-accentYellow text-black text-xs font-semibold px-3 py-1 rounded-full shadow-lg">

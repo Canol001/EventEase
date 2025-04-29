@@ -1,27 +1,108 @@
 <%- include('partials/header') %>
 
-<div class="container mx-auto px-4 py-8">
-  <h2 class="text-3xl font-futuristic text-white mb-8 text-center">Upcoming Events</h2>
-  
-  <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    <% events.forEach(event => { %>
-      <li class="flex justify-center">
-        <a href="/event/<%= event.id %>" class="block bg-cardBg p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105">
-          <div class="relative">
-            <div class="mb-4">
-              <!-- Event Name -->
-              <h3 class="text-xl font-semibold text-white mb-2"><%= event.name %></h3>
-            </div>
+<div class="container mx-auto px-4">
+  <h2 class="text-3xl font-futuristic text-white mb-6">Your Booking Confirmation</h2>
 
-            <div class="flex justify-between text-gray-300">
-              <p class="text-sm">Seats Available:</p>
-              <p class="text-primary font-medium text-lg"><%= event.seats %></p>
-            </div>
-          </div>
+  <!-- Booking Confirmation Section -->
+  <div id="receipt" class="bg-cardBg p-8 rounded-lg shadow-lg mb-8 max-w-xl mx-auto">
+    <h3 class="text-2xl font-semibold text-white mb-4">Booking Summary</h3>
+
+    <div class="mb-4">
+      <p class="text-gray-400">Event: <span class="text-primary font-medium" id="event-name"><%= event.name %></span></p>
+      <p class="text-gray-400">Date: <span class="text-primary font-medium" id="event-date"><%= event.date %></span></p>
+      <p class="text-gray-400">Location: <span class="text-primary font-medium" id="event-location"><%= event.location %></span></p>
+    </div>
+
+    <div class="mb-4">
+      <p class="text-gray-400">Seat Number: <span class="text-primary font-medium" id="seat-number"><%= seat %></span></p>
+      <p class="text-gray-400">Booked By: <span class="text-primary font-medium" id="booked-by"><%= name %></span></p>
+      <p class="text-gray-400">Entry Code: <span class="text-primary font-medium" id="entry-code"><%= entryCode %></span></p>
+    </div>
+
+    <div class="bg-primary p-4 rounded-lg mt-6">
+      <p class="text-white text-xl font-semibold">Booking Confirmed!</p>
+      <p class="text-white">Thank you for booking your seat for this event. We look forward to seeing you!</p>
+    </div>
+  </div>
+
+  <!-- Button to Download PDF -->
+  <div class="text-center mb-10">
+    <button id="download-pdf" class="bg-primary text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition">
+      Download Receipt as PDF
+    </button>
+
+    <!-- Spinner and Downloading Text -->
+    <div id="downloading" class="mt-4 hidden flex items-center justify-center">
+      <svg class="animate-spin h-5 w-5 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
+      <span class="text-primary font-medium">Downloading...</span>
+    </div>
+  </div>
+
+  <!-- Additional Upcoming Events Section -->
+  <h3 class="text-2xl font-semibold text-white mb-4">Explore Other Upcoming Events</h3>
+  <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% events.forEach(event => { %>
+      <li>
+        <a href="/event/<%= event.id %>" class="block bg-cardBg p-4 rounded-lg shadow-lg hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold text-white mb-2"><%= event.name %></h3>
+          <p class="text-gray-400">Seats Available: <span class="text-primary font-medium"><%= event.seats %></span></p>
         </a>
       </li>
     <% }) %>
   </ul>
 </div>
 
+<%- include('partials/footer') %>
 
+<!-- jsPDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+  document.getElementById('download-pdf').addEventListener('click', async function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+  
+    // Show spinner
+    document.getElementById('downloading').classList.remove('hidden');
+  
+    // Get data from HTML
+    const eventName = document.getElementById('event-name').textContent;
+    const eventDate = document.getElementById('event-date').textContent;
+    const eventLocation = document.getElementById('event-location').textContent;
+    const seatNumber = document.getElementById('seat-number').textContent;
+    const bookedBy = document.getElementById('booked-by').textContent;
+    const entryCode = document.getElementById('entry-code').textContent;
+  
+    // PDF Content
+    doc.setFontSize(26);
+    doc.text('EventEase Booking Receipt', 20, 20);
+  
+    doc.setFontSize(16);
+    doc.text(`Entry Code: ${entryCode}`, 20, 40);
+    doc.text(`Event: ${eventName}`, 20, 50);
+    doc.text(`Date: ${eventDate}`, 20, 60);
+    doc.text(`Location: ${eventLocation}`, 20, 70);
+    doc.text(`Seat Number: ${seatNumber}`, 20, 80);
+    doc.text(`Booked By: ${bookedBy}`, 20, 90);
+    
+  
+    doc.setFontSize(14);
+    doc.setTextColor(0, 102, 204);
+    doc.text('Booking Confirmed!', 20, 120);
+  
+    // Watermark
+    doc.setTextColor(230, 230, 230);
+    doc.setFontSize(60);
+    doc.text('EventEase', 35, 150, { angle: 45 });
+  
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  
+    doc.save('booking_receipt.pdf');
+  
+    document.getElementById('downloading').classList.add('hidden');
+  });
+  
+</script>
