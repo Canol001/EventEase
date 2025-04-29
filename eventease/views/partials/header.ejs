@@ -1,58 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= event ? event.name + ' | EventEase' : 'EventEase' %></title>
+<head>
+  <% const hasEvent = typeof event !== 'undefined'; %>
   
-    <!-- Meta Description -->
-    <meta name="description" content="<%= event ? ('Join us for ' + event.name + ' at ' + event.location + ' on ' + event.date + '! Book your seat now.') : 'Discover and book seats for amazing events on EventEase.' %>">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <!-- Open Graph Meta Tags -->
-    <% if (event) { %>
-      <meta property="og:title" content="<%= event.name %> | EventEase" />
-      <meta property="og:description" content="Don't miss <%= event.name %> happening at <%= event.location %>!" />
-      <meta property="og:image" content="https://eventease-as8q.onrender.com/uploads/<%= event.image %>" />
-      <meta property="og:url" content="https://eventease-as8q.onrender.com/event/<%= event.id %>" />
-      <meta property="og:type" content="website" />
-    <% } else { %>
-      <meta property="og:title" content="EventEase | Discover Events" />
-      <meta property="og:description" content="Find and book seats for top events easily with EventEase." />
-      <meta property="og:image" content="https://eventease-as8q.onrender.com/default-preview.jpg" />
-      <meta property="og:url" content="https://eventease-as8q.onrender.com/" />
-      <meta property="og:type" content="website" />
-    <% } %>
+  <!-- Dynamic Title -->
+  <title><%= hasEvent ? event.name + ' | EventEase' : 'EventEase' %></title>
   
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= event ? event.name + ' | EventEase' : 'EventEase' %>">
-    <meta name="twitter:description" content="<%= event ? ('Join ' + event.name + ' at ' + event.location + '!') : 'Discover and book your next event seat easily on EventEase.' %>">
-    <meta name="twitter:image" content="<%= event ? 'https://eventease-as8q.onrender.com/uploads/' + event.image : 'https://eventease-as8q.onrender.com/default-preview.jpg' %>">
+  <!-- Meta Description -->
+  <meta name="description" content="<%= hasEvent ? ('Join us for ' + event.name + ' at ' + event.location + ' on ' + event.date + '! Book your seat now.') : 'Discover and book seats for amazing events on EventEase.' %>">
   
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#3b82f6', // Blue accent from the image
-              darkBg: '#1f2937',  // Dark background
-              cardBg: '#374151',  // Card background
-              accentYellow: '#fef08a', // Yellow for featured events
-            },
-            fontFamily: {
-              futuristic: ['Orbitron', 'sans-serif'], // Futuristic font (you can include via Google Fonts if needed)
-            },
+  <!-- Open Graph Meta Tags for Social Sharing -->
+  <meta property="og:title" content="<%= hasEvent ? event.name + ' | EventEase' : 'EventEase' %>">
+  <meta property="og:description" content="<%= hasEvent ? ('Join us for ' + event.name + ' at ' + event.location + ' on ' + event.date + '! Book your seat now.') : 'Discover and book seats for amazing events on EventEase.' %>">
+  <meta property="og:image" content="<%= hasEvent ? ('https://eventease-as8q.onrender.com/uploads/' + event.image) : 'https://eventease-as8q.onrender.com/default-share-image.jpg' %>">
+  <meta property="og:url" content="https://eventease-as8q.onrender.com/">
+  <meta property="og:type" content="website">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3b82f6', // Blue accent
+            darkBg: '#1f2937',  // Dark background
+            cardBg: '#374151',  // Card background
+            accentYellow: '#fef08a', // Yellow for highlights
+          },
+          fontFamily: {
+            futuristic: ['Orbitron', 'sans-serif'],
           },
         },
-      };
-    </script>
+      },
+    };
+  </script>
   
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  </head>
-  
+  <!-- Google Fonts (Optional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
 <body class="bg-darkBg text-white min-h-screen">
   <header class="bg-darkBg border-b border-gray-700 p-4">
     <div class="container mx-auto flex justify-between items-center">
