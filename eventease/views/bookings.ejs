@@ -57,17 +57,18 @@
 
 <%- include('partials/footer') %>
 
-<!-- jsPDF Library -->
+<!-- jsPDF and QRCode Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 
 <script>
   document.getElementById('download-pdf').addEventListener('click', async function() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-  
+
     // Show spinner
     document.getElementById('downloading').classList.remove('hidden');
-  
+
     // Get data from HTML
     const eventName = document.getElementById('event-name').textContent;
     const eventDate = document.getElementById('event-date').textContent;
@@ -75,11 +76,11 @@
     const seatNumber = document.getElementById('seat-number').textContent;
     const bookedBy = document.getElementById('booked-by').textContent;
     const entryCode = document.getElementById('entry-code').textContent;
-  
+
     // PDF Content
     doc.setFontSize(26);
     doc.text('EventEase Booking Receipt', 20, 20);
-  
+
     doc.setFontSize(16);
     doc.text(`Entry Code: ${entryCode}`, 20, 40);
     doc.text(`Event: ${eventName}`, 20, 50);
@@ -87,22 +88,31 @@
     doc.text(`Location: ${eventLocation}`, 20, 70);
     doc.text(`Seat Number: ${seatNumber}`, 20, 80);
     doc.text(`Booked By: ${bookedBy}`, 20, 90);
-    
-  
+
+    // QR Code Generation
+    const qr = qrcode(0, 'L'); // type number 0 (automatic size), error correction level L (low)
+    qr.addData(entryCode);
+    qr.make();
+    const qrDataUrl = qr.createDataURL(8); // 8 = cell size (sharp)
+
+    // Insert QR code into PDF (at X:140, Y:40)
+    doc.addImage(qrDataUrl, 'PNG', 140, 40, 50, 50); // X, Y, width, height
+
+    // Confirmation text
     doc.setFontSize(14);
     doc.setTextColor(0, 102, 204);
     doc.text('Booking Confirmed!', 20, 120);
-  
+
     // Watermark
     doc.setTextColor(230, 230, 230);
     doc.setFontSize(60);
     doc.text('EventEase', 35, 150, { angle: 45 });
-  
+
+    // Wait a second to simulate loading
     await new Promise(resolve => setTimeout(resolve, 1000));
-  
+
     doc.save('booking_receipt.pdf');
-  
+
     document.getElementById('downloading').classList.add('hidden');
   });
-  
 </script>
