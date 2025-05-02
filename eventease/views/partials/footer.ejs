@@ -2,5 +2,27 @@
 <footer class="bg-darkBg border-t border-gray-700 p-4 text-center">
   <p class="text-gray-400">&copy; 2025 EventEase. All rights reserved.</p>
 </footer>
+<script>
+  function shareEvent(eventId) {
+    const url = `${window.location.origin}/event/${eventId}`;
+    const shareData = {
+      title: 'Check out this event on EventEase!',
+      url: url
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData).catch(err => {
+        alert('Sharing failed:', err);
+      });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Event link copied to clipboard!');
+      }).catch(err => {
+        alert('Failed to copy link:', err);
+      });
+    }
+  }
+</script>
+
 </body>
 </html>
